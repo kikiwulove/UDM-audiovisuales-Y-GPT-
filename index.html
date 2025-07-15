@@ -4,7 +4,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Malla Curricular Interactiva</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #fff0f5;
+      font-family: 'Arial', sans-serif;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #d63384;
+    }
+    .tabs {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .tabs button {
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #ffc0cb;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+    .malla-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .materia {
+      background: #fff;
+      border: 2px solid #ffc0cb;
+      border-radius: 10px;
+      margin: 10px;
+      padding: 10px;
+      width: 200px;
+      text-align: center;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+    .materia.activa {
+      opacity: 1;
+      border-color: #ff69b4;
+    }
+    .materia.completada {
+      background-color: #ffe6f0;
+      border-color: #d63384;
+      text-decoration: line-through;
+    }
+  </style>
 </head>
 <body>
   <h1>Malla Curricular Interactiva</h1>
@@ -14,9 +65,117 @@
   </div>
 
   <div id="audiovisual" class="malla-content"></div>
-  <div id="grafica" class="malla-content" style="display: none;"></div>
+  <div id="grafica" class="malla-content" style="display:none;"></div>
 
-  <script src="mallas.js"></script>
-  <script src="interaccion.js"></script>
+  <script>
+    const materias = {
+      audiovisual: [
+        { id: "estetica", nombre: "Estética", semestre: 1 },
+        { id: "expresion", nombre: "Expresión Escrita", semestre: 1 },
+        { id: "foto1", nombre: "Fotografía", semestre: 1 },
+        { id: "derecho", nombre: "Fund. de Derecho", semestre: 1 },
+        { id: "intro_com", nombre: "Intro. a la Cción.", semestre: 1 },
+        { id: "lectura1", nombre: "Lectura y Escritura I", semestre: 1 },
+        { id: "grafico1", nombre: "Taller Gráfico I", semestre: 1 },
+
+        { id: "ciencia", nombre: "Ciencia y Libertad", semestre: 2 },
+        { id: "foto2", nombre: "Fotografía II", semestre: 2, prerequisitos: ["foto1"] },
+        { id: "herr1", nombre: "Herramientas I", semestre: 2 },
+        { id: "cine1", nombre: "Historia del Cine I", semestre: 2 },
+        { id: "lectura2", nombre: "Lectura y Escritura II", semestre: 2, prerequisitos: ["lectura1"] },
+        { id: "narrativa", nombre: "Taller Narrativa", semestre: 2, prerequisitos: ["retorica"] },
+        { id: "teorias", nombre: "Teorías de la Comunicación", semestre: 2 },
+
+        { id: "deporte", nombre: "Act. Deportiva", semestre: 3 },
+        { id: "publicos", nombre: "Análisis de Públicos", semestre: 3, prerequisitos: ["intro_com"] },
+        { id: "foto3", nombre: "Fotografía III", semestre: 3, prerequisitos: ["foto2"] },
+        { id: "guion1", nombre: "Guión I", semestre: 3 },
+        { id: "cine2", nombre: "Historia del Cine II", semestre: 3, prerequisitos: ["cine1"] },
+        { id: "radio", nombre: "Radio", semestre: 3 },
+        { id: "lectura3", nombre: "Lectura y Escritura III", semestre: 3, prerequisitos: ["lectura2"] },
+
+        { id: "antro", nombre: "Antropología", semestre: 4 },
+        { id: "guion2", nombre: "Guión II", semestre: 4, prerequisitos: ["guion1"] },
+        { id: "herr2", nombre: "Herramientas II", semestre: 4, prerequisitos: ["herr1"] },
+        { id: "libre1", nombre: "Libre Elección I", semestre: 4 },
+        { id: "lit1", nombre: "Literatura I", semestre: 4 },
+        { id: "psico", nombre: "Psicología Org.", semestre: 4 },
+        { id: "tv", nombre: "Televisión", semestre: 4, prerequisitos: ["narrativa"] },
+
+        { id: "digital", nombre: "Comunicación Digital", semestre: 5 },
+        { id: "guion3", nombre: "Guión III", semestre: 5, prerequisitos: ["guion2"] },
+        { id: "herr3", nombre: "Herramientas III", semestre: 5, prerequisitos: ["herr2"] },
+        { id: "real_tv", nombre: "Realización TV", semestre: 5, prerequisitos: ["narrativa"] },
+        { id: "libre2", nombre: "Libre Elección II", semestre: 5 },
+        { id: "retorica", nombre: "Retórica y Arg.", semestre: 5 },
+        { id: "socio", nombre: "Sociología Org.", semestre: 5 },
+
+        { id: "gestion", nombre: "Gestión de la Cción.", semestre: 6, prerequisitos: ["publicos"] },
+        { id: "guion4", nombre: "Guión IV", semestre: 6, prerequisitos: ["guion3"] },
+        { id: "planvar", nombre: "Plan Variable", semestre: 6, prerequisitos: ["real_tv"] },
+        { id: "libre3", nombre: "Libre Elección III", semestre: 6 },
+        { id: "cuanti", nombre: "Métodos Cuantitativos", semestre: 6 },
+        { id: "semio", nombre: "Semiótica", semestre: 6 },
+        { id: "sonido1", nombre: "Sonido I", semestre: 6, prerequisitos: ["real_tv"] },
+
+        { id: "musical", nombre: "Apreciación Musical", semestre: 7 },
+        { id: "docu", nombre: "Documental", semestre: 7, prerequisitos: ["planvar"] },
+        { id: "linea1", nombre: "Línea de Énfasis I", semestre: 7 },
+        { id: "metod", nombre: "Metodología Invest.", semestre: 7 },
+        { id: "produccion", nombre: "Producción Ejecutiva", semestre: 7, prerequisitos: ["docu"] },
+        { id: "histgeo", nombre: "Hist. y Geografía", semestre: 7 },
+        { id: "sonido2", nombre: "Sonido II", semestre: 7, prerequisitos: ["sonido1"] },
+
+        { id: "geopol", nombre: "Geopolítica", semestre: 8 },
+        { id: "herr4", nombre: "Herramientas IV", semestre: 8, prerequisitos: ["herr3"] },
+        { id: "histarte", nombre: "Historia del Arte", semestre: 8 },
+        { id: "legis", nombre: "Legislación Comunicación", semestre: 8 },
+        { id: "linea2", nombre: "Línea de Énfasis II", semestre: 8, prerequisitos: ["linea1"] },
+        { id: "lit2", nombre: "Literatura II", semestre: 8, prerequisitos: ["lit1"] },
+        { id: "plancom", nombre: "Plan de Comunicación", semestre: 8 },
+
+        { id: "actores", nombre: "Dirección de Actores", semestre: 9 },
+        { id: "arte", nombre: "Dirección de Arte", semestre: 9 },
+        { id: "etica", nombre: "Ética", semestre: 9 },
+        { id: "herr5", nombre: "Herramientas V", semestre: 9, prerequisitos: ["herr4"] },
+        { id: "argumental", nombre: "Audiovisual IV: Argumental", semestre: 9, prerequisitos: ["docu"] },
+        { id: "linea3", nombre: "Línea de Énfasis III", semestre: 9, prerequisitos: ["linea2"] },
+        { id: "ciencia_soc", nombre: "Ciencia y Sociedad", semestre: 9 },
+
+        { id: "proyecto", nombre: "Práctica/Grado", semestre: 10, prerequisitos: ["linea3"] }
+      ],
+      grafica: [] // Se agregará luego por espacio
+    };
+
+    function mostrarMalla(tipo) {
+      document.getElementById("audiovisual").style.display = tipo === "audiovisual" ? "flex" : "none";
+      document.getElementById("grafica").style.display = tipo === "grafica" ? "flex" : "none";
+
+      const container = document.getElementById(tipo);
+      container.innerHTML = "";
+
+      materias[tipo].forEach(m => {
+        const div = document.createElement("div");
+        div.className = "materia";
+        div.id = m.id;
+        div.innerText = m.nombre;
+        if (!m.prerequisitos) div.classList.add("activa");
+        container.appendChild(div);
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("materia") && e.target.classList.contains("activa")) {
+        e.target.classList.add("completada");
+        const tipo = document.getElementById("audiovisual").style.display === "flex" ? "audiovisual" : "grafica";
+        materias[tipo].forEach(m => {
+          if (m.prerequisitos && m.prerequisitos.includes(e.target.id)) {
+            const allMet = m.prerequisitos.every(pr => document.getElementById(pr)?.classList.contains("completada"));
+            if (allMet) document.getElementById(m.id)?.classList.add("activa");
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
